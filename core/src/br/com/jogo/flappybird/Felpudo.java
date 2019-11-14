@@ -11,7 +11,7 @@ public class Felpudo {
     private int curFrame;
     private float timeToNext;
 
-    private Circle body;
+    public Circle body;
 
     private float acel;
     private float speed;
@@ -50,6 +50,10 @@ public class Felpudo {
         if (body.y <= -100 || body.y >= 2400) return -1;
 
         return 0;
+    }
+
+    public void die(){
+        acel = -3000;
     }
 
     public void  fly(){

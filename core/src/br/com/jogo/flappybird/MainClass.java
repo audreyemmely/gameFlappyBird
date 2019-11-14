@@ -2,9 +2,14 @@ package br.com.jogo.flappybird;
 
 import com.badlogic.gdx.ApplicationAdapter;
 import com.badlogic.gdx.Gdx;
+import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.graphics.GL20;
 import com.badlogic.gdx.graphics.Texture;
+import com.badlogic.gdx.graphics.g2d.BitmapFont;
+import com.badlogic.gdx.graphics.g2d.GlyphLayout;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
+import com.badlogic.gdx.graphics.g2d.freetype.FreeTypeFontGenerator;
+import com.badlogic.gdx.math.Intersector;
 import com.badlogic.gdx.utils.Array;
 import com.badlogic.gdx.utils.viewport.FitViewport;
 import com.badlogic.gdx.utils.viewport.Viewport;
@@ -26,16 +31,37 @@ public class MainClass extends ApplicationAdapter {
 	private State state;
 	private float timeToFinish;
 
+	private int score = 0;
+	private boolean counting = false;
+
+	private BitmapFont font150;
+	private BitmapFont font250;
+	private GlyphLayout glyphLayout;
+
+
 	@Override
 	public void create () {
-		viewport = new FitViewport(1150, 2300);
+		viewport = new FitViewport(1150, 2300); //largura da tela
 		batch = new SpriteBatch();
 		back = new Background();
 		felpudo = new Felpudo();
 		pipes = new Array<Pipe>();
 		pipes.add(new Pipe());
 		state = State.WAIT;
+		FreeTypeFontGenerator.setMaxTextureSize(FreeTypeFontGenerator.NO_MAXIMUM);
+		FreeTypeFontGenerator generator = new FreeTypeFontGenerator(Gdx.files.internal("font.ttf"));
+		FreeTypeFontGenerator.FreeTypeFontParameter parameter = new FreeTypeFontGenerator.FreeTypeFontParameter();
 
+		parameter.color = Color.WHITE;
+		parameter.size = 150;
+		font150 = generator.generateFont(parameter);
+
+		parameter.size = 250;
+		font250 = generator.generateFont(parameter);
+
+		generator.dispose();
+
+		glyphLayout = new GlyphLayout();
 	}
 
 	@Override
@@ -84,7 +110,28 @@ public class MainClass extends ApplicationAdapter {
 						i--;
 					}
 				}
-				//detectar colisão com felpudo
+
+				boolean aux = false;
+
+				for (Pipe p:pipes){
+					if (Intersector.overlaps(felpudo.body, p.up) || Intersector.overlaps(felpudo.body, p.down)){
+						state = State.DIE;
+						timeToFinish = 2f;
+						felpudo.die();
+					}
+
+					if (Intersector.overlaps(felpudo.body, p.score)){
+                        aux = true;
+                        if (!counting){
+                            score++;
+                            counting = true;
+                        }
+                    }
+				}
+
+				if (!aux){
+				    counting = false;
+				}
 
 				if (Gdx.input.justTouched()) felpudo.fly();
 				break;
@@ -107,6 +154,20 @@ public class MainClass extends ApplicationAdapter {
 			p.draw(batch);
 		}
 		felpudo.draw(batch);
+
+		switch (state){
+			case WAIT:
+				font150.draw(batch, "Toque!", (1750 - getTamX(font150, "Toque na tela!"))/2, 1600);
+				break;
+			case PLAY:
+			case DIE:
+				font150.draw(batch, String.valueOf(score), (1100 - getTamX(font150, String.valueOf(score)))/2, 2000);
+				break;
+			case FINISH:
+				font150.draw(batch, "Pontos:", (1100 - getTamX(font150, "Pontos:"))/2, 1500);
+				font250.draw(batch, String.valueOf(score), (1100 - getTamX(font250, String.valueOf(score)))/2, 1200);
+				break;
+		}
 	}
 
 	private void reset(){
@@ -114,6 +175,14 @@ public class MainClass extends ApplicationAdapter {
 		felpudo = new Felpudo();
 		pipes.clear();
 		timeToNext = 2.0f;
+		score = 0;
+		counting = false;
+	}
+
+	private float getTamX(BitmapFont font, String text){
+		glyphLayout.reset();
+		glyphLayout.setText(font, text);
+		return  glyphLayout.width;
 	}
 
 

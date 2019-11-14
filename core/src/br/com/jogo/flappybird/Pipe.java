@@ -9,8 +9,10 @@ public class Pipe {
 
     private Texture img;
 
-    private Rectangle up;
-    private Rectangle down;
+    public Rectangle up;
+    public Rectangle down;
+
+    public Rectangle score;
 
     public Pipe(){
         img = new Texture("cano.png");
@@ -20,12 +22,15 @@ public class Pipe {
         up = new Rectangle(1250, y + 200, 200, 2300);
         down = new Rectangle(1250, y - 200 - 2300, 200, 2300);
 
+        score = new Rectangle(1250 + 200 + 120, y - 200, 10, 400);
     }
 
     public int update(float delta){
         float SPEED = -500;
         up.x += delta * SPEED;
         down.x += delta * SPEED;
+
+        score.x += delta * SPEED;
 
         if (up.x <= -200){
             return -1;
