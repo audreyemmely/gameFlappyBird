@@ -193,6 +193,13 @@ public class MainClass extends ApplicationAdapter {
 
 	@Override
 	public void dispose () {
-
+		batch.dispose();
+		font150.dispose();
+		font250.dispose();
+		felpudo.dispose();
+		back.dispose();
+		for(Pipe p : pipes) {
+			p.dispose();
+		}
 	}
 }

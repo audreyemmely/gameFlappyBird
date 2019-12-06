@@ -44,4 +44,8 @@ public class Pipe {
         batch.draw(img, down.x, down.y, down.width, down.height, 0,0, img.getWidth(), img.getHeight(), false, false);
     }
 
+    public void dispose(){
+        img.dispose();
+    }
+
 }

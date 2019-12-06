@@ -33,4 +33,7 @@ public class Background {
         batch.draw(img, x2, 0, 1150, 2300);
     }
 
+    public void dispose(){
+        img.dispose();
+    }
 }

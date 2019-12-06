@@ -56,9 +56,15 @@ public class Felpudo {
         acel = -3000;
     }
 
-    public void  fly(){
+    public void fly(){
         speed = 1000;
         acel = -2000;
-
     }
+
+    public void dispose(){
+        for (int i=0; i<=5; i++){
+            frames[i].dispose();
+        }
+    }
+
 }
